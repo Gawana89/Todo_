@@ -10,6 +10,10 @@ class Todo:
     #Функция добавляет новое дело
     def add_issue(self,issue,clock,complete,transfer):
         self.issue[issue] = [clock,complete,transfer]
+        #создание временного словаря и сортировка по времени
+        sort_issue = dict(sorted(self.issue.items(), key = lambda item: (int(item[1][0].split(':')[0]),int(item[1][0].split(':')[1]))))
+        #замена старого словаря на отсортированный
+        self.issue = sort_issue
         self.init_count()
     
     #Функуия удаляет дело
@@ -54,12 +58,16 @@ class Todo:
         self.init_count()
     
     #Изменяет состояние дела Перенесено\Не перенесено
-    def change_transfer(self,issue):
+    def change_transfer(self,issue, new_time):
         temp = self.issue.get(issue)
         if temp[2] == False:
             temp[2] = True
+            self.transfer_issue[issue] = [new_time,False,False]#добавляем дело в новый словарь   
+            
         else:
             temp[2] = False
+            self.transfer_issue.pop(issue)#удаляем дело из нового словаря
+        
         self.issue.update({issue:temp})
         self.init_count()
     
@@ -85,18 +93,24 @@ class Todo:
     def show(self):
         nums = 1
         for key,value in self.issue.items():
-            print(f'{nums}.{key} time:{value[0]} {'Выполнено'if value[1] else 'Не выполнено'} {'Перенесено'if self.transfer_issue.get(key) else 'Не перенесено'}')
+            print(f'{nums}.{key} time:{value[0]} {'Выполнено'if value[1] else 'Не выполнено'} {'Перенесено'if value[2] else 'Не перенесено'}')
             nums += 1
         print(f'Не выполненные дела: {self.count_no_complete}')
         print(f'Перенесенные дела: {self.count_transfer}')
-        print(f'Общее колличество дел: {self.count}')  
+        print(f'Общее колличество дел: {self.count}')
+        
 
 
 todo = Todo()
 todo.add_issue('Завтрак','8:30', False,False)
 todo.add_issue('Уборка','10:00', False,False)
 todo.add_issue('Корм.Кот','12:30', False,False)
-todo.change_transfer('Уборка')
+todo.add_issue('Ожид.Курьера','10:45', False,False)
+todo.add_issue('Починка крана','12:15', False,False)
+todo.change_transfer('Уборка', '12:50')
 todo.show()
 
-#Удалить флан перенесено и разграничить хранение дел.
+#добавить сортировку словаря при удалении дел.
+#добавить механизм добавления незапланированных дел.
+#добавить меню
+
