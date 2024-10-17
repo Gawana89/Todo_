@@ -19,6 +19,14 @@ class Todo:
     #Функуия удаляет дело
     def delete_issue(self,issue):
         self.issue.pop(issue)
+        #Проверка наличия дела в словаре перенесенных дел
+        if self.transfer_issue.get(issue):
+            #Удаление дела из словаря перенесенных дел
+            self.transfer_issue.pop(issue)
+        #создание временного словаря и сортировка по времени
+        sort_issue = dict(sorted(self.issue.items(), key = lambda item: (int(item[1][0].split(':')[0]),int(item[1][0].split(':')[1]))))
+        #замена старого словаря на отсортированный
+        self.issue = sort_issue
         self.init_count()
     
     #Возвращает общее колличество дел    
@@ -86,7 +94,16 @@ class Todo:
         self.count_transfer = c_transfer
         self.count = count
             
-        
+    def new_issue(self):
+        task = input('Введите название дела: ') #Вводим дело
+        time = input('Введите время в формате ЧЧ:ММ - ')#Вводим время
+        busy_time = []
+        for i in self.issue.values():
+            busy_time.append(i[0])
+        if time not in busy_time:
+            self.add_issue(task,time,False,False)
+        else:
+            print('Укажите другое время')
         
     
     #Выводит информацию о всех делах
@@ -107,10 +124,10 @@ todo.add_issue('Уборка','10:00', False,False)
 todo.add_issue('Корм.Кот','12:30', False,False)
 todo.add_issue('Ожид.Курьера','10:45', False,False)
 todo.add_issue('Починка крана','12:15', False,False)
-todo.change_transfer('Уборка', '12:50')
+todo.new_issue()
 todo.show()
 
-#добавить сортировку словаря при удалении дел.
-#добавить механизм добавления незапланированных дел.
-#добавить меню
+
+#добавить
+#прокоментировать функцию new_issue
 
